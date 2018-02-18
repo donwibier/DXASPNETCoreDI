@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace lamp_console
-{
-       
+{       
     public interface IOnOff
     {
         void GoOn(object sender);
         void GoOff(object sender);
     }
 
-    public class MySwitch : IOnOff {
+    public class MySwitch {
         private IEnumerable<IOnOff> _Outlets = null;
         private bool _IsOn;
         private readonly string _Id;
@@ -44,7 +43,7 @@ namespace lamp_console
                 _Outlets.ToList().ForEach(l => l.GoOff(this));
             }
         }
-
+        #region IOnOff interface
         public void GoOn(object sender)
         {
             if (!_IsOn)
@@ -62,6 +61,7 @@ namespace lamp_console
                 Log($"{this.GetType().Name} ({_Id}) switched off.");        
             }
         }
+        #endregion
     }
 
     public class MyLamp : IOnOff {        
@@ -93,30 +93,32 @@ namespace lamp_console
     {
         static void Main(string[] args)
         {
-            // MyLamp l = new MyLamp("A");            
-            // MySwitch s = new MySwitch("1", l);
-            // s.FlipUp();
-            // s.FlipDown();            
+            MyLamp l = new MyLamp("A");            
+            MySwitch s = new MySwitch("1", l);
+            s.FlipUp();
+            s.FlipDown();     
 
-            IOnOff[] stuff = new IOnOff[] {
-                new MyLamp("A"),
-                null,
-                new MyLamp("B"),
-                null
-            };
+            #region Complete demo
+            // IOnOff[] stuff = new IOnOff[] {
+            //     new MyLamp("A"),
+            //     null,
+            //     new MyLamp("B"),
+            //     null
+            // };
 
-            MySwitch s1 = new MySwitch("1", stuff);
-            MySwitch s2 = new MySwitch("2", stuff);
-            stuff[1] = s1;
-            stuff[3] = s2;
+            // MySwitch s1 = new MySwitch("1", stuff);
+            // MySwitch s2 = new MySwitch("2", stuff);
+            // stuff[1] = s1;
+            // stuff[3] = s2;
 
-            s1.FlipUp();
-            Console.WriteLine("==============");
-            s2.FlipUp();
-            Console.WriteLine("==============");
-            s2.FlipDown();
-            Console.WriteLine("==============");
-            s1.FlipUp();
+            // s1.FlipUp();
+            // Console.WriteLine("==============");
+            // s2.FlipUp();
+            // Console.WriteLine("==============");
+            // s2.FlipDown();
+            // Console.WriteLine("==============");
+            // s1.FlipUp();
+            #endregion
         }
     }
 }
