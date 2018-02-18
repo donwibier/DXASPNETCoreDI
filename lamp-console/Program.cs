@@ -4,64 +4,88 @@ using System.Linq;
 
 namespace lamp_console
 {
-    public enum Status{ Off, On }
-        
+       
     public interface IOnOff
     {
         void GoOn(object sender);
         void GoOff(object sender);
     }
 
-    public class MySwitch {
+    public class MySwitch : IOnOff {
         private IEnumerable<IOnOff> _Outlets = null;
-        private Status _Status = Status.Off;
-        public MySwitch(IEnumerable<IOnOff> outlets){
-            _Outlets = outlets;
+        private bool _IsOn;
+        private readonly string _Id;
+        public MySwitch(string id, IEnumerable<IOnOff> outlets)
+        {
+            _Id = id;
+            _Outlets = outlets;            
         }
-        public MySwitch(IOnOff outlet)
-            : this(new IOnOff[] { outlet })
+        public MySwitch(string id, IOnOff outlet)
+            : this(id, new IOnOff[] { outlet })
         {          
         }
+        protected virtual void Log(string msg) => Console.WriteLine(msg);
+        
         public void FlipUp()
         {
-            if (_Status != Status.On)
+            if (!_IsOn)
             {
-                _Status = Status.On;                
+                _IsOn = true;
+                Log($"{this.GetType().Name} ({_Id}) flipped up.");               
                 _Outlets.ToList().ForEach(l => l.GoOn(this));
             }
         }
 
         public void FlipDown()
         {
-            if (_Status != Status.Off){
-                _Status = Status.Off;
+            if (_IsOn){
+                _IsOn = false;
+                Log($"{this.GetType().Name} ({_Id}) flipped down.");        
                 _Outlets.ToList().ForEach(l => l.GoOff(this));
+            }
+        }
+
+        public void GoOn(object sender)
+        {
+            if (!_IsOn)
+            {
+                _IsOn = true;
+                Log($"{this.GetType().Name} ({_Id}) switched on.");        
+            }
+        }
+
+        public void GoOff(object sender)
+        {
+            if (_IsOn)
+            {
+                _IsOn = false;
+                Log($"{this.GetType().Name} ({_Id}) switched off.");        
             }
         }
     }
 
     public class MyLamp : IOnOff {        
         private bool _isOn;
-        private string _Name;
+        private readonly string _Id;
 
-        public MyLamp(string name)
+        public MyLamp(string id)
         {
-            _Name = name;
+            _Id = id;
             IsOn = false;
         }
-
+        protected virtual void Log(string msg) => Console.WriteLine(msg);
         public bool IsOn { get => _isOn; set => _isOn = value; }
 
         public void GoOff(object sender)
         {
             this.IsOn = false;
-            Console.WriteLine($"{this.GetType().Name} ({_Name}) switched off.");
+            Log($"{this.GetType().Name} ({_Id}) switched off.");
         }
 
         public void GoOn(object sender)
         {
             this.IsOn = true;
-            Console.WriteLine($"{this.GetType().Name} ({_Name}) switched on.");
+            Log($"{this.GetType().Name} ({_Id}) switched on.");
         }
     }
 
@@ -69,12 +93,30 @@ namespace lamp_console
     {
         static void Main(string[] args)
         {
-            MyLamp l = new MyLamp("A");            
-            MySwitch s = new MySwitch(l);
+            // MyLamp l = new MyLamp("A");            
+            // MySwitch s = new MySwitch("1", l);
+            // s.FlipUp();
+            // s.FlipDown();            
 
-            s.FlipUp();
-            s.FlipDown();
-            
+            IOnOff[] stuff = new IOnOff[] {
+                new MyLamp("A"),
+                null,
+                new MyLamp("B"),
+                null
+            };
+
+            MySwitch s1 = new MySwitch("1", stuff);
+            MySwitch s2 = new MySwitch("2", stuff);
+            stuff[1] = s1;
+            stuff[3] = s2;
+
+            s1.FlipUp();
+            Console.WriteLine("==============");
+            s2.FlipUp();
+            Console.WriteLine("==============");
+            s2.FlipDown();
+            Console.WriteLine("==============");
+            s1.FlipUp();
         }
     }
 }
