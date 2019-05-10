@@ -6,22 +6,27 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using aspnet.Models;
 using aspnet.Code;
+using Microsoft.Extensions.Configuration;
 
 namespace aspnet.Controllers
 {
+	[TypeFilter(typeof(TestActionFilter))]
 	public class HomeController : Controller
 	{
-		public HomeController(IStringModifierService r, ReReverserService s)
+		private IStringModifierService s1;
+		private IConfiguration _cfg;
+		public HomeController(IStringModifierService svc, IConfiguration cfg)
 		{
-			_r = r;
-			_s = s;
+			s1 = svc;
+			_cfg = cfg;
 		}
-		IStringModifierService _r;
-		ReReverserService _s;
 
-		public IActionResult Index([FromServices]UpperCaseService u)
+		public IActionResult Index(
+			[FromServices]
+			IUpperCaseService s2
+			)
 		{
-			ViewData["Message"] = u.Modify( _s.Modify("Application uses"));
+			ViewData["Message"] = s2.Modify( s1.Modify( "Application uses"));
 			return View();
 		}
 
@@ -51,3 +56,7 @@ namespace aspnet.Controllers
 		}
 	}
 }
+
+#region notes
+// [FromServices] UpperCaseService u
+#endregion

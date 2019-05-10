@@ -34,23 +34,11 @@ namespace aspnet
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-			var s = new ReverserService();
+			//services.Add(new ServiceDescriptor(typeof(IStringModifierService), typeof(ReverserService), ServiceLifetime.Transient));
 			services.AddSingleton(Configuration);
-			//services.AddSingleton(typeof(IStringModifierService), s);
-			//services.AddSingleton(typeof(ISomeother), s);
-			//services.AddSingleton<ReReverserService>((c) => {
-			//	var r = c.GetService<IStringModifierService>();
-			//	return new ReReverserService(r);
-			//});
-			services.Add(new ServiceDescriptor(
-				typeof(IStringModifierService),
-				typeof(ReverserService),
-				ServiceLifetime.Transient));
-			services.Add(new ServiceDescriptor(
-				typeof(ISomeotherService),
-				typeof(ReReverserService),
-				ServiceLifetime.Transient));
-			services.AddTransient<UpperCaseService>();
+			services.AddTransient<IStringModifierService, ReverserService>();
+			services.AddTransient<IUpperCaseService, UpperCaseService>();
+			services.AddTransient<ISomeotherService, ReReverserService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

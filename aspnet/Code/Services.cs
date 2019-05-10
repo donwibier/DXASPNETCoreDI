@@ -11,9 +11,14 @@ namespace aspnet.Code
 	{
 		string Modify(string input);
 	}
+	public interface IUpperCaseService: IStringModifierService
+	{
 
-	public interface ISomeotherService : IStringModifierService { }
+	}
+	public interface ISomeotherService : IStringModifierService
+	{
 
+	}
 	public class ReverserService : IStringModifierService
 	{
 		//private string data;
@@ -36,7 +41,7 @@ namespace aspnet.Code
 		}
 	}
 
-	public class UpperCaseService : IStringModifierService
+	public class UpperCaseService : IUpperCaseService
 	{
 		public string Modify(string input)
 		{
@@ -51,10 +56,15 @@ namespace aspnet.Code
 		{
 			_r = r;
 		}
-
 		public string Modify(string input)
 		{
 			return _r.Modify(_r.Modify(input));
 		}
 	}
 }
+
+#region notes
+
+
+
+#endregion
