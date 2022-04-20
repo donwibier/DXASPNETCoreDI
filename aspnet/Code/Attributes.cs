@@ -10,6 +10,10 @@ namespace aspnet.Code
 	public class TestActionFilter : ActionFilterAttribute
 	{
 		private readonly IStringModifierService _svc;
+		//public TestActionFilter(Func<ModifierEnum, IStringModifierService> resolver)
+		//{
+		//	_svc = resolver(ModifierEnum.Uppercase);
+		//}
 		public TestActionFilter(IStringModifierService svc)
 		{
 			_svc = svc;

@@ -13,20 +13,26 @@ namespace aspnet.Controllers
 	[TypeFilter(typeof(TestActionFilter))]
 	public class HomeController : Controller
 	{
-		private IStringModifierService s1;
-		private IConfiguration _cfg;
-		public HomeController(IStringModifierService svc, IConfiguration cfg)
-		{
-			s1 = svc;
-			_cfg = cfg;
-		}
+		//private IStringModifierService s1;
+		//private IConfiguration _cfg;
+		//public HomeController(IStringModifierService svc, IConfiguration cfg)
+		//{
+		//	s1 = svc;
+		//	_cfg = cfg;
+		//}		
 
-		public IActionResult Index(
-			[FromServices]
-			IUpperCaseService s2
-			)
+		readonly IStringModifierService uppercaseService;
+		readonly IStringModifierService reverserService;
+		readonly IStringModifierService rereverserService;
+		public HomeController(Func<ModifierEnum, IStringModifierService> resolver)
 		{
-			ViewData["Message"] = s2.Modify( s1.Modify( "Application uses"));
+			uppercaseService = resolver(ModifierEnum.Uppercase);
+			reverserService = resolver(ModifierEnum.Reverser);
+			rereverserService = resolver(ModifierEnum.ReReverser);
+		}
+		public IActionResult Index()
+		{
+			ViewData["Message"] = reverserService.Modify(uppercaseService.Modify("Application uses"));
 			return View();
 		}
 
